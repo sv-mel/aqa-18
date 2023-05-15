@@ -153,44 +153,46 @@ public class UserTest extends BaseTest {
                 .log().body()
                 .body(matchesJsonSchemaInClasspath("userCreateResponseSchema.json"));
     }
-//
-//    @Test
-//    public void shouldCreateWithList() {
-//        RequestSpecification postRequest = RestAssured.given();
-//
-//        final UserDto user = new UserDto();
-//
-//        JSONObject object = new JSONObject()
-//                .put("id", user.getId())
-//                .put("username", user.getUsername())
-//                .put("lastName", user.getLastName())
-//                .put("firstName", user.getFirstName())
-//                .put("password", user.getPassword())
-//                .put("phone", user.getPhone())
-//                .put("email", user.getEmail())
-//                .put("userStatus", user.getUserStatus());
-//
-//        final JSONArray userJson = new JSONArray(List.of(object));
-//        //[{}]
-//
-//        postRequest.body(userJson.toString());
-//        postRequest.header("content-type", "application/json");
-//
-//        final CommonResponse expectedResponse = new CommonResponse(
-//                200,
-//                "unknown",
-//                "9223372036854763197"
-//        );
-//
-//        System.out.println(postRequest.log().body());
-//
-//        Response response = postRequest.post("/user/createWithList");
-//        response.then()
-//                .log().body()
-//                .statusCode(200)
-//                .body("type", equalTo(expectedResponse.getType()),
-//                        "code", equalTo(expectedResponse.getCode()));
-//
-//    }
+
+
+
+    @Test
+    public void shouldCreateWithList() {
+        RequestSpecification postRequest = RestAssured.given();
+
+        final UserDto user = new UserDto();
+
+        JSONObject object = new JSONObject()
+                .put("id", user.getId())
+                .put("username", user.getUsername())
+                .put("lastName", user.getLastName())
+                .put("firstName", user.getFirstName())
+                .put("password", user.getPassword())
+                .put("phone", user.getPhone())
+                .put("email", user.getEmail())
+                .put("userStatus", user.getUserStatus());
+
+        final JSONArray userJson = new JSONArray(List.of(object));
+        //[{}]
+
+        postRequest.body(userJson.toString());
+        postRequest.header("content-type", "application/json");
+
+        final CommonResponse expectedResponse = new CommonResponse(
+                200,
+                "unknown",
+                "9223372036854763197"
+        );
+
+        System.out.println(postRequest.log().body());
+
+        Response response = postRequest.post("/user/createWithList");
+        response.then()
+                .log().body()
+                .statusCode(200)
+                .body("type", equalTo(expectedResponse.getType()),
+                        "code", equalTo(expectedResponse.getCode()));
+
+    }
 
 }

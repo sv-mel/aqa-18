@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Response pattern",
+  "type": "object",
+  "properties": {
+    "payload": {
+      "type": "object",
+      "properties": {
+        "pvzDeliveryMinPrice": {
+          "type": "integer"
+        },
+        "courierDeliveryMinPrice": {
+          "type": "integer"
+        },
+        "courierToDayDeliveryMinPrice": {
+          "type": "integer"
+        },
+        "minDeliveryPointDeliveryPrice": {
+          "type": "null"
+        }
+      }
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  }
+}
