@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class PetDto {
 
-    private Integer id;
+    private Long id;
 
     private CategoryDto category;
 
@@ -15,11 +15,11 @@ public class PetDto {
 
     private String status;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
