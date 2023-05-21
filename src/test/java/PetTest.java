@@ -1,6 +1,8 @@
+import io.qameta.allure.Flaky;
 import io.restassured.RestAssured;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.json.JSONArray;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.hamcrest.Matchers.equalTo;
@@ -71,22 +74,23 @@ public class PetTest extends BaseTest {
     }
 
     @Test
+    @Flaky
     public void shouldFindPetByStatus() {
         List<PetDto> response = requestSpec
-                .param("status","pending")
+                .param("status","sold")
                 .get("/pet/findByStatus")
                 .as(new TypeRef<>() {});
 
         assertThat(response)
-                .filteredOn(PetDto::getName, "Kusa_pysa")
+                .filteredOn(PetDto::getName, "boseron")
                 .extracting(
                         PetDto::getName,
                         PetDto::getStatus
                 )
                 .containsExactlyInAnyOrder(
                         tuple(
-                                "Kusa_pysa",
-                                "pending"
+                                "boseron",
+                                "sold"
                         )
                 );
     }
@@ -130,27 +134,27 @@ public class PetTest extends BaseTest {
                 .put("category", category);
 
         PetDto petRes = requestSpec
+                .log().uri()
                 .body(pet.toString())
-//               .log().body()
+                .log().body()
                 .contentType("application/json")
                 .post("/pet")
                 .as(new TypeRef<>() {});
 
-//        assertThat(petRes.getName()).isEqualTo("Pet Name");
+        assertThat(petRes.getName()).isEqualTo("Pet Name");
 
         assertThat(petRes.getId()).isNotNull();
         assertThat(petRes)
                 .extracting(
-                        PetDto::getCategory,
                         PetDto::getPhotoUrls
-                ).containsExactly(
-                        category1,
+                ).isEqualTo(
                         List.of("1", "2")
                 );
+// if you need compare dto value in dto
 
-//        assertThat(petRes) -- if you need compare dto value in dto
-//                .extracting(PetDto::getCategory)
-//                .extracting(CategoryDto::getId)
+        assertThat(petRes.getCategory())
+                .extracting(CategoryDto::getName)
+                .isEqualTo("Category Name");
 
     }
 
@@ -187,11 +191,59 @@ public class PetTest extends BaseTest {
                 .then()
                 .statusCode(200);
     }
+
+    @Test
+    public void shouldPutPet() {
+        JSONObject pet = new JSONObject()
+                .put("id", 3L)
+                .put("name", "Pet Name")
+                .put("tags", new JSONArray(List.of(createTag())))
+                .put("photoUrls", List.of("1", "2"))
+                .put("status", "sold")
+                .put("category", createCategory());
+
+        step("Сгенерировать питомца", () -> {
+            generatePet(pet);
+        });
+
+        String name = faker.name().name();
+        pet.put("name", name);
+
+        Response r = step("Заменить имя питомца", () -> {
+            return requestSpec
+                    .body(pet.toString())
+                    .contentType("application/json")
+                    .put("/pet");
+        });
+
+        step("Убедиться, что имя изменено", () -> {
+            r
+                    .then()
+                    .log().body()
+                    .statusCode(200)
+                    .body("name", equalTo(name));
+        });
+    }
+
     private PetDto generatePet(Object o) {
         return requestSpec
                 .body(o.toString())
                 .contentType("application/json")
                 .post("/pet")
                 .as(new TypeRef<>() {});
+    }
+    private JSONObject createTag(){
+        TagDto tagDto = new TagDto();
+
+        return new JSONObject()
+                .put("id", tagDto.getId())
+                .put("name", tagDto.getName());
+    }
+    private JSONObject createCategory() {
+        TagDto CategoryDto = new TagDto();
+
+        return new JSONObject()
+                .put("id", CategoryDto.getId())
+                .put("name", CategoryDto.getName());
     }
 }

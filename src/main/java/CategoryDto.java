@@ -19,4 +19,8 @@ public class CategoryDto {
     public void setName(String name) {
         this.name = name;
     }
+    public CategoryDto () {
+        this.id = FakerUtil.randomId();
+        this.name = FakerUtil.randomName();
+    }
 }

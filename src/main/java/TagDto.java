@@ -18,4 +18,8 @@ public class TagDto {
     public void setName(String name) {
         this.name = name;
     }
+    public TagDto () {
+        this.id = FakerUtil.randomId();
+        this.name = FakerUtil.randomName();
+    }
 }
